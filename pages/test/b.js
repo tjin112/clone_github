@@ -1,74 +1,73 @@
-import React, { useState, useEffect ,useReducer,useLayoutEffect} from "react";
-
-// class b extends React.Component {
-//   state = {
-//     counter: 0,
-//   };
-//   componentDidMount() {
-//     this.interval = setInterval(() => {
-//       this.setState({ counter: this.state.counter + 1 });
-//     }, 1000);
-//   }
-//   componentWillUnmount() {
-//     if (this.interval) {
-//       clearInterval(this.interval);
-//     }
-//   }
-//   render() {
-//     return (
-//       <div>
-//         倒数：
-//         <span>{this.state.counter}</span>
-//       </div>
-//     );
-//   }
-// }
-function countReducer(state,action){
-    switch(action.type){
-        case 'add':
-            return state + 1
-        case 'minus':
-            return state - 1
-        default:
-            return state
+import React, {
+    useState,
+    useReducer,
+    useContext,
+    useLayoutEffect,
+    useEffect,
+    useRef,
+    memo,
+    useMemo,
+    useCallback,
+  } from 'react'
+  
+  function countReducer(state, action) {
+    switch (action.type) {
+      case 'add':
+        return state + 1
+      case 'minus':
+        return state - 1
+      default:
+        return state
     }
-}
-
-
-function MyCountFunc() {
-//   const [counter, setcounter] = useState(0);
-    let [count,dispatchCount] = useReducer(countReducer,0)
-    const [name,setName] = useState('jack')
-  // 渲染完之后的回调函数
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//     //   setcounter((c)=>{ 
-//     //       return c+1
-//     //   });
-//     dispatchCount({type:'minus'})
-//     }, 1000)
-    
-//     //组件在卸载的时候执行 return 清楚interval
-//     return()=>clearTimeout(interval)
-//   },[]);
-    useEffect(()=>{
-        count+=1
-        console.log('effect invoked')
-        return ()=> console.log('effect detected')
-    },[count,name])
-    useLayoutEffect(()=>{
-        count+=1
-        console.log('layout_effect')
-        return ()=> console.log('layout_effect detected')
-    },[count,name])
-  return (
-    <div>
-      倒数：
-      <button onClick={()=>dispatchCount({type:'add'})}>{count}</button>
-      <input value = {name} onChange = {e=>setName(e.target.value)}></input>
-      
-    </div>
-  );
-}
-
-export default MyCountFunc;
+  }
+  
+  function MyCountFunc() {
+    const [count, dispatchCount] = useReducer(countReducer, 0)
+    const [name, setName] = useState('jokcy')
+  
+    const countRef = useRef() // { current: '' }
+    countRef.current = count
+  
+    const config = useMemo(
+      () => ({
+        text: `count is ${count}`,
+        color: count > 3 ? 'red' : 'blue',
+      }),
+      [count],
+    )
+  
+    // const handleButtonClick = useCallback(
+    //   () => dispatchCount({ type: 'add' }),
+    //   [],
+    // )
+  
+    const handleButtonClick = useMemo(
+      () => () => dispatchCount({ type: 'add' }),
+      [],
+    )
+  
+    const handleAlertButtonClick = function() {
+      setTimeout(() => {
+        alert(countRef.current)
+      }, 2000)
+    }
+  
+    return (
+      <div>
+        <input value={name} onChange={e => setName(e.target.value)} />
+        <Child config={config} onButtonClick={handleButtonClick} />
+        <button onClick={handleAlertButtonClick}>alert count</button>
+      </div>
+    )
+  }
+  //function 组件
+  const Child = memo(function Child({ onButtonClick, config }) {
+    console.log('child render')
+    return (
+      <button onClick={onButtonClick} style={{ color: config.color }}>
+        {config.text}
+      </button>
+    )
+  })
+  
+  export default MyCountFunc

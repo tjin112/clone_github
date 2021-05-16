@@ -1,32 +1,36 @@
-import '../styles/globals.css'
-import 'antd/dist/antd.css'
-import App ,{ Container }from 'next/app'
-import Layout from '../components/Layout'
-
+import "../styles/globals.css";
+import "antd/dist/antd.css";
+import App, { Container } from "next/app";
+import Layout from "../components/Layout";
+import { Provider } from "react-redux";
+import testHoc from '../lib/with-redux'
 // function MyApp({ Component, pageProps }) {
-  
+
 //   return <Component {...pageProps} />
 // }
-class MyApp extends App{
-  static async getInitialProps({ Component , ctx }){
-    console.log('App init')
-    let pageProps = {}
+class MyApp extends App {
+  static async getInitialProps(ctx) {
+    const { Component} = ctx
+    console.log("App init");
+    let pageProps = {};
     if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx)
+      pageProps = await Component.getInitialProps(ctx);
     }
-    return{
-      pageProps
-    }
+    return {
+      pageProps,
+    };
   }
   render() {
-    const { Component, pageProps } = this.props
+    const { Component, pageProps,reduxStore } = this.props;
     return (
       <Layout>
-        <Component {...pageProps} />
+        <Provider store={reduxStore}>
+          <Component {...pageProps} />
+        </Provider>
       </Layout>
-        
-    )
+    );
   }
+  
 }
 
-export default MyApp
+export default testHoc(MyApp);
