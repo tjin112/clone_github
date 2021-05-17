@@ -6,6 +6,7 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const RedisSessionStore = require('./server/session-store')
 const Redis = require('ioredis')
+const auth  = require('./server/auth')
 // 处理http请求的响应
 const handle = app.getRequestHandler();
 
@@ -20,6 +21,9 @@ app.prepare().then(() => {
     store:new RedisSessionStore(redis)
   };
   server.use(session(SESSION_CONFIG, server));
+  //配置处理oauth登陆
+  
+  auth(server)
   server.use(async (ctx, next) => {
     // console.log(ctx.cookies.get('id'))
     // if(!ctx.session.user){

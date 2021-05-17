@@ -6,6 +6,10 @@ import Router from "next/router";
 import { Button } from "antd";
 import { connect } from "react-redux";
 import { add } from  '../store/store'
+import getConfig from 'next/config'
+
+const {publicRuntimeConfig} =getConfig()
+
 const Index = function Index({ counter ,username,rename,add}) {
   return (
     <div>
@@ -13,6 +17,7 @@ const Index = function Index({ counter ,username,rename,add}) {
       <a>User Name:{username}</a>
       <input value = {username} onChange ={(e)=>rename(e.target.value)}/>
       <button onClick={()=>add(counter )}>do add</button>
+      <a href={publicRuntimeConfig.OAUTH_URL}>Sign in</a>
     </div>
   );
 };

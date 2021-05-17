@@ -9,7 +9,6 @@ function getRedisSessionId(sid) {
   
     //获取Redis中存储的session数据
     async get(sid) {
-      console.log('get session', sid)
       const id = getRedisSessionId(sid)
       const data = await this.client.get(id)
       if (!data) {
@@ -25,7 +24,6 @@ function getRedisSessionId(sid) {
   
     // 存储session数据到redis
     async set(sid, sess, ttl) {
-      console.log('set session', sid)
       const id = getRedisSessionId(sid)
       if (typeof ttl === 'number') {
         ttl = Math.ceil(ttl / 1000)
