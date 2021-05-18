@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { connect } from "react-redux";
 import getConfig from "next/config";
 
+import { logout } from "../store/store";
 import { withRouter } from "next/router";
 
 import axios from "axios";
@@ -20,8 +21,6 @@ import {
 import { GithubOutlined } from "@ant-design/icons";
 import Container from "./Container";
 
-// import { logout } from '../store/store'
-
 const { Header, Content, Footer } = Layout;
 const { publicRuntimeConfig } = getConfig();
 
@@ -36,11 +35,8 @@ const githubIconStyle = {
 const footerStyle = {
   textAlign: "center",
 };
-const Index = function Index({ children, user }) {
-  // const urlQuery = router.query && router.query.query
-
+const Index = function Index({ children, user, logout, router }) {
   const [search, setSearch] = useState();
-
   const handleSearchChange = useCallback(
     (event) => {
       setSearch(event.target.value);
@@ -51,16 +47,34 @@ const Index = function Index({ children, user }) {
   // const handleOnSearch = useCallback(() => {
   //   router.push(`/search?query=${search}`);
   // }, [search]);
-const userDropDown = (
-  <Menu>
-    <Menu.Item>
-      <a href='javascript:void(0)'>
-        Log out
-      </a>
-    </Menu.Item>
-  </Menu>
-) 
-  
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
+  const handleGoToOAuth = useCallback((e) => {
+    try {
+      e.preventDefault();
+      axios.get(`/prepare-auth?url=${router.asPath}`)
+      .then((res) => {
+        if (res.status === 200) {
+          location.href = publicRuntimeConfig.OAUTH_URL;
+        } else {
+          console.log("prepare autho failed", res);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+  const userDropDown = (
+    <Menu>
+      <Menu.Item>
+        <a href="javascript:void(0)" onClick={handleLogout}>
+          Log out
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Layout>
       <Header>
@@ -79,13 +93,16 @@ const userDropDown = (
             <div className="user">
               {user && user.id ? (
                 <Dropdown overlay={userDropDown}>
-                  <a href="/">
+                  <a href="javascript:void(0)">
                     <Avatar size={40} src={user.avatar_url} />
                   </a>
                 </Dropdown>
               ) : (
                 <Tooltip title="Click to login">
-                  <a href={publicRuntimeConfig.OAUTH_URL}>
+                  <a
+                    href={`/prepare-auth?url=${router.asPath}`}
+                    
+                  >
                     <Avatar size={40} icon="user" />
                   </a>
                 </Tooltip>
@@ -133,8 +150,15 @@ const userDropDown = (
   );
 };
 
-export default connect(function mapStateToProps(state) {
-  return {
-    user: state.user,
-  };
-})(Index);
+export default connect(
+  function mapStateToProps(state) {
+    return {
+      user: state.user,
+    };
+  },
+  function mapDispatchToProps(dispatch) {
+    return {
+      logout: () => dispatch(logout()),
+    };
+  }
+)(withRouter(Index));

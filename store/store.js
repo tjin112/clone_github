@@ -6,6 +6,7 @@ import axios from 'axios'
 
 const userInitialState = {}
 
+//logout type
 const LOGOUT = 'LOGOUT'
 
 function userReducer(state = userInitialState, action) {
@@ -17,35 +18,27 @@ function userReducer(state = userInitialState, action) {
       return state
   }
 }
-
-/**
- * {
- *  user: {},
- *  count: {}
- * }
- */
 const allReducers = combineReducers({
   user: userReducer,
 })
 
 // action creators
-export function logout() {
-  return dispatch => {
-    axios
-      .post('/logout')
-      .then(resp => {
-        if (resp.status === 200) {
-          dispatch({
-            type: LOGOUT,
-          })
-        } else {
-          console.log('logout failed', resp)
-        }
-      })
-      .catch(err => {
-        console.log('logout failed', err)
-      })
-  }
+export function logout(){
+ 
+   return dispatch=>{
+    console.log('我被调用了')
+     axios.post('/logout').then(res=>{
+       if(res.status === 200){
+         dispatch({
+           type:LOGOUT
+         })
+       }else{
+         console.log('logout failed' + res)
+       }
+     }).catch(err=>{
+       console.log('logout failed' + err)
+     })
+   }
 }
 
 export default function initializeStore(state) {
