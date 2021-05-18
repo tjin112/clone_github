@@ -1,16 +1,15 @@
 // import "../styles/globals.css";
-import "antd/dist/antd.css";
 import App, { Container } from "next/app";
-import Layout from "../components/Layout";
 import { Provider } from "react-redux";
-import testHoc from '../lib/with-redux'
-// function MyApp({ Component, pageProps }) {
+import "antd/dist/antd.css";
 
-//   return <Component {...pageProps} />
-// }
+import Layout from "../components/Layout";
+
+import testHoc from "../lib/with-redux";
+
 class MyApp extends App {
   static async getInitialProps(ctx) {
-    const { Component} = ctx
+    const { Component } = ctx;
     let pageProps = {};
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
@@ -20,16 +19,17 @@ class MyApp extends App {
     };
   }
   render() {
-    const { Component, pageProps,reduxStore } = this.props;
+    const { Component, pageProps, reduxStore } = this.props;
     return (
-      <Layout>
+      <Container>
         <Provider store={reduxStore}>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Provider>
-      </Layout>
+      </Container>
     );
   }
-  
 }
 
 export default testHoc(MyApp);

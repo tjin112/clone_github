@@ -40,21 +40,11 @@ app.prepare().then(() => {
       ctx.set('Content-Type', 'application/json')
     }
   })
-
-//   router.get('api/user/info', async ctx => {
-//       const user = ctx.session.userInfo
-//     if (!user) {
-//       ctx.status = 401
-//       ctx.body = 'Need Login'
-//     } else {
-//       ctx.body = user
-//       ctx.set('Content-Type', 'application/json')
-//     }
-//   })
   server.use(router.routes());
 
   server.use(async (ctx, next) => {
     // ctx.cookies.set("id", "userid:123");
+    ctx.req.session = ctx.session
     await handle(ctx.req, ctx.res);
     ctx.req = false;
   });
