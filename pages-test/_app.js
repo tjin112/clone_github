@@ -1,5 +1,5 @@
 // import "../styles/globals.css";
-import "antd/dist/antd.css";
+// import "@/antd/dist/antd.css";
 import App, { Container } from "next/app";
 import Layout from "../components/Layout";
 import { Provider } from "react-redux";
