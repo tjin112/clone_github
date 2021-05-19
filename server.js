@@ -1,4 +1,5 @@
 const Koa = require("koa");
+const koaBody = require('koa-body')
 const next = require("next");
 const Router = require("koa-router");
 const session = require("koa-session");
@@ -7,6 +8,7 @@ const app = next({ dev });
 const RedisSessionStore = require('./server/session-store')
 const Redis = require('ioredis')
 const auth  = require('./server/auth')
+const api = require('./server/api')
 // 处理http请求的响应
 const handle = app.getRequestHandler();
 
@@ -16,6 +18,7 @@ app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
   server.keys = ["taimin develpo github app"];
+  server.use(koaBody())
   const SESSION_CONFIG = {
     key: "jid",
     store:new RedisSessionStore(redis)
@@ -24,6 +27,7 @@ app.prepare().then(() => {
   //配置处理oauth登陆
 
   auth(server)
+  api(server)
   server.use(async (ctx, next) => {
         console.log(ctx.session.user)
     // }

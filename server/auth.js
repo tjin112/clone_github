@@ -25,7 +25,7 @@ module.exports = server => {
         },
       })
 
-      console.log(result.status, result.data)
+      console.log("ctx print",ctx)
 
       if (result.status === 200 && (result.data && !result.data.error)) {
         ctx.session.githubAuth = result.data
@@ -39,8 +39,6 @@ module.exports = server => {
             Authorization: `${token_type} ${access_token}`,
           },
         })
-
-        console.log(userInfoResp.data)
         ctx.session.userInfo = userInfoResp.data
 
         ctx.redirect((ctx.session && ctx.session.urlBeforeOAuth) || '/')

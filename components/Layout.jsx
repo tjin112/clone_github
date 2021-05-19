@@ -22,6 +22,7 @@ import { GithubOutlined } from "@ant-design/icons";
 import Container from "./Container";
 
 const { Header, Content, Footer } = Layout;
+// login
 const { publicRuntimeConfig } = getConfig();
 
 const githubIconStyle = {
@@ -36,7 +37,8 @@ const footerStyle = {
   textAlign: "center",
 };
 const Index = function Index({ children, user, logout, router }) {
-  const [search, setSearch] = useState();
+  const urlQuery = router.query && router.query.query
+  const [search, setSearch] = useState(urlQuery || '');
   const handleSearchChange = useCallback(
     (event) => {
       setSearch(event.target.value);
@@ -44,9 +46,9 @@ const Index = function Index({ children, user, logout, router }) {
     [setSearch]
   );
 
-  // const handleOnSearch = useCallback(() => {
-  //   router.push(`/search?query=${search}`);
-  // }, [search]);
+  const handleOnSearch = useCallback(() => {
+    router.push(`/search?query=${search}`);
+  }, [search]);
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
@@ -86,7 +88,12 @@ const Index = function Index({ children, user, logout, router }) {
               </Link>
             </div>
             <div>
-              <Input.Search placeholder="Search:" />
+              <Input.Search 
+              placeholder="Search:" 
+              value={search}
+              onChange={handleSearchChange}
+              onSearch = {handleOnSearch}
+              />
             </div>
           </div>
           <div className="header-right">

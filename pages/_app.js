@@ -7,6 +7,7 @@ import PageLoading from '../components/PageLoading'
 import testHoc from "../lib/with-redux";
 import Router from 'next/router'
 import Link from 'next/link'
+import axios from 'axios'
 class MyApp extends App {
   state={
     loading:false
@@ -49,12 +50,6 @@ class MyApp extends App {
         <Provider store={reduxStore}>
           {this.state.loading ?<PageLoading />: null}
           <Layout>
-          <Link href="/">
-            <a>Index</a>
-          </Link>
-          <Link href="/detail">
-            <a>Detail</a>
-          </Link>
             <Component {...pageProps} />
           </Layout>
         </Provider>
