@@ -24,9 +24,6 @@ module.exports = server => {
           Accept: 'application/json',
         },
       })
-
-      console.log("ctx print",ctx)
-
       if (result.status === 200 && (result.data && !result.data.error)) {
         ctx.session.githubAuth = result.data
 

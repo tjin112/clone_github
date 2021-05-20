@@ -34,7 +34,7 @@ const githubIconStyle = {
 };
 
 const footerStyle = {
-  textAlign: "center",
+  textAlign: "center"
 };
 const Index = function Index({ children, user, logout, router }) {
   const urlQuery = router.query && router.query.query

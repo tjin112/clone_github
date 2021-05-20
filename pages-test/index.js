@@ -10,7 +10,6 @@ import { useEffect }  from 'react'
 import axios from 'axios'
 const {publicRuntimeConfig} =getConfig()
 const Index = function Index({ user }) {
-  console.log(user)
   return (
     <div>
       <button>do add</button>

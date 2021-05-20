@@ -1,13 +1,26 @@
-import { Button, Icon } from "antd";
-import { SmileTwoTone, HeartTwoTone, CheckCircleTwoTone } from '@ant-design/icons'
+import { Button, Icon, Tabs } from "antd";
+import { HeartTwoTone } from "@ant-design/icons";
 import { useEffect } from "react";
 import getConfig from "next/config";
 import { connect } from "react-redux";
-import { getTwoToneColor, setTwoToneColor } from '@ant-design/icons';
+import Repo from "../components/Repos";
+import Router, { withRouter } from "next/router";
 const api = require("../lib/api");
 const { publicRuntimeConfig } = getConfig();
-const Index = function Index({ userRepos, userstaredRepos, user }) {
-    console.log(userRepos,user)
+let cachedUserRepos,
+  cachedUserstaredRepos = "";
+const isServer = typeof window === "undefined";
+const Index = function Index({ userRepos, userstaredRepos, user, router }) {
+  const tabKey = router.query.key || "1";
+  const handleTabChange = (activeKey) => {
+    Router.push(`/?key=${activeKey}`);
+  };
+  useEffect(() => {
+    if (!isServer) {
+      cachedUserRepos = userRepos;
+      cachedUserstaredRepos = userstaredRepos;
+    }
+  },[ ]);
   if (!user || !user.id) {
     return (
       <div className="root">
@@ -27,6 +40,7 @@ const Index = function Index({ userRepos, userstaredRepos, user }) {
       </div>
     );
   }
+
   return (
     <div className="root">
       <div className="user-info">
@@ -38,52 +52,66 @@ const Index = function Index({ userRepos, userstaredRepos, user }) {
           <Icon type="email" style={{ marginRight: 10 }}></Icon>
           <a href={`mailto:${user.email}`}>{user.email}</a>
         </p>
-        <p> 
-            <a href={user.html_url}>{user.html_url}</a>
+        <p>
+          <a href={user.html_url}>{user.html_url}</a>
         </p>
         <p>
-            <HeartTwoTone />
-            <a href={user.location}>{user.location}</a>
+          <HeartTwoTone />
+          <a href={user.location}>{user.location}</a>
         </p>
       </div>
-      <div className='user-repos'>
-          <p>user-repos</p>
+      <div className="user-repos">
+        <Tabs activeKey={tabKey} onChange={handleTabChange} animated={true}>
+          <Tabs.TabPane tab="Your Repositories" key="1">
+            {userRepos.map((repo) => (
+              <Repo key={repo.id} repo={repo} />
+            ))}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="关注的reps" key="2">
+            {userstaredRepos.map((repo) => (
+              <Repo key={repo.id} repo={repo} />
+            ))}
+          </Tabs.TabPane>
+        </Tabs>
       </div>
       <style jsx>{`
-          .root{
-              display:flex;
-              align-items:flex-start;
-              padding:20px 0;
-          }
-          .user-info{
-              width:200px;
-              margin-right:40px;
-              flex-shrink:0;
-              display:flex;
-              flex-direction:column;
-          }
-          .login {
-              font-weight:800;
-              font-size:20px;
-              margin-top:20px;
-          }
-          .name{
-              font-size:16px;
-              color:#777;
-          }
-          .bio{
-              margin-top:20px;
-              color:#333;
-          }
-          .avatar{
-              width:100%;
-              border-radius:5px;
-          }
-          `}</style>
+        .root {
+          display: flex;
+          align-items: flex-start;
+          padding: 20px 0;
+        }
+        .user-info {
+          width: 200px;
+          margin-right: 40px;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+        }
+        .login {
+          font-weight: 800;
+          font-size: 20px;
+          margin-top: 20px;
+        }
+        .name {
+          font-size: 16px;
+          color: #777;
+        }
+        .bio {
+          margin-top: 20px;
+          color: #333;
+        }
+        .avatar {
+          width: 100%;
+          border-radius: 100px;
+        }
+        .user-repos {
+          flex-grow: 1;
+        }
+      `}</style>
     </div>
-
   );
 };
+
 Index.getInitialProps = async ({ ctx, reduxStore }) => {
   const user = reduxStore.getState().user;
   if (!user || !user.id) {
@@ -91,6 +119,15 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
       isLogin: false,
     };
   }
+  if (!isServer) {
+    if (cachedUserRepos && cachedUserstaredRepos) {
+      return {
+        userRepos: cachedUserRepos,
+        userstaredRepos: cachedUserstaredRepos,
+      };
+    }
+  }
+
   const userRepos = await api.request(
     {
       url: "/user/repos",
@@ -111,8 +148,10 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
     userstaredRepos: userstaredRepos.data,
   };
 };
-export default connect(function mapStateToProps(state) {
-  return {
-    user: state.user,
-  };
-})(Index);
+export default withRouter(
+  connect(function mapStateToProps(state) {
+    return {
+      user: state.user,
+    };
+  })(Index)
+);
