@@ -5,10 +5,15 @@ import getConfig from "next/config";
 import { connect } from "react-redux";
 import Repo from "../components/Repos";
 import Router, { withRouter } from "next/router";
+import LRU from "lru-cache";
+
+// const cache = new LRU({
+//   maxAge: 1000 * 10,
+// });
 const api = require("../lib/api");
 const { publicRuntimeConfig } = getConfig();
-let cachedUserRepos,
-  cachedUserstaredRepos = "";
+let cachedUserRepos, cachedUserStaredRepos = ''
+
 const isServer = typeof window === "undefined";
 const Index = function Index({ userRepos, userstaredRepos, user, router }) {
   const tabKey = router.query.key || "1";
@@ -17,10 +22,20 @@ const Index = function Index({ userRepos, userstaredRepos, user, router }) {
   };
   useEffect(() => {
     if (!isServer) {
-      cachedUserRepos = userRepos;
-      cachedUserstaredRepos = userstaredRepos;
+        cachedUserRepos = userRepos;
+        cachedUserStaredRepos = userstaredRepos;
+    //   if (userRepos) {
+    //     cache.set("userRepos", userRepos);
+    //   }
+    //   if (userstaredRepos) {
+    //     cache.set("userstaredRepos", userstaredRepos);
+    //   }
+      const timeout = setTimeout(()=>{
+          cachedUserRepos = null
+          cachedUserStaredRepos = null
+      },(1000*60*1))
     }
-  },[ ]);
+  }, [userRepos, userstaredRepos]);
   if (!user || !user.id) {
     return (
       <div className="root">
@@ -120,11 +135,17 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
     };
   }
   if (!isServer) {
-    if (cachedUserRepos && cachedUserstaredRepos) {
+    //  if (cache.get('userRepos') && cache.get('userStaredRepos')) {
+    //   return {
+    //     userRepos: cache.get('userRepos'),
+    //     userStaredRepos: cache.get('userStaredRepos'),
+    //   }
+    // }
+       if (cachedUserRepos && cachedUserStaredRepos) {
       return {
-        userRepos: cachedUserRepos,
-        userstaredRepos: cachedUserstaredRepos,
-      };
+        userRepos:cachedUserRepos,
+        userstaredRepos: cachedUserStaredRepos,
+      }
     }
   }
 

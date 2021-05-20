@@ -46,7 +46,6 @@ function MyCountFunc() {
 //   const [counter, setcounter] = useState(0);
     let [count,dispatchCount] = useReducer(countReducer,0)
     const [name,setName] = useState('jack')
-
     const inputRef = useRef()
   // 渲染完之后的回调函数
 //   useEffect(() => {

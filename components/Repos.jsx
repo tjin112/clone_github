@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {  SmileTwoTone } from '@ant-design/icons'
 import moment from 'moment'
+
 function getLicense(license) {
   return license ? `${license.spdx_id} license` : "";
 }
@@ -55,6 +56,9 @@ const Repos = ({repo}) => {
           }
           .repo-description{
               width:400px;
+          }
+          .basic-info{
+            width:500px;
           }
           .other-info >span +  span {
               margin-left:10px;
