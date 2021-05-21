@@ -8,7 +8,6 @@ function Issues({test}){
     )
 }
 Issues.getInitialProps = async ()=>{
-    console.log('Issues get invoked')
     return {
         test:123
     }

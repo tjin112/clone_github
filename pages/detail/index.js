@@ -1,15 +1,22 @@
 import withRepoBasic from '../../components/With-repo-basic'
+import api from '../../lib/api'
+import dynamic from 'next/dynamic'
 
-function Detail({test}){
+
+const MDRendere = dynamic(
+    ()=>import ('../../components/MarkdownRenderer'))
+
+function Detail({readme}){
     return (
-        <>
-            <span>Detail/index  {test}</span>
-        </>
+        <MDRendere content={readme.content} isBase64 = {true}/>
     )
 }
-Detail.getInitialProps = async ()=>{
+Detail.getInitialProps = async ({ctx:{query:{owner,name}},req,res})=>{
+    const readmeRes = await api.request({
+        url: `/repos/${owner}/${name}/readme`
+    },req,res)
     return {
-        test:123
+        readme:readmeRes.data
     }
 }
 

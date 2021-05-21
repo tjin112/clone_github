@@ -9,11 +9,14 @@ const RedisSessionStore = require('./server/session-store')
 const Redis = require('ioredis')
 const auth  = require('./server/auth')
 const api = require('./server/api')
+const atob = require('atob')
 // 处理http请求的响应
 const handle = app.getRequestHandler();
 
 //创建redis client
 const redis = new Redis()
+//设置node.js 全局增加atob方法
+global.atob = atob
 app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
