@@ -2,8 +2,9 @@ import { withRouter } from "next/router";
 import { Row, Col, List, Pagination } from "antd";
 import Link from "next/link";
 import Router from "next/router";
-import { memo , isValidElement} from "react";
+import { memo , isValidElement , useEffect} from "react";
 import Repo from "../components/Repos";
+import {cacheArray} from '../lib/repo-basic-cache'
 const api = require("../lib/api");
 /**
  * sort : 排序方式
@@ -47,6 +48,7 @@ const selectedItemStyle = {
   fontWeight: "600",
 };
 
+const isServer = typeof window === 'undefined'
 const FillterLink = memo(({ name, query, lang, sort, order ,page }) => {
   let queryString = `?query=${query}`;
   if (lang) queryString += `&lang=${lang}`;
@@ -63,6 +65,14 @@ const FillterLink = memo(({ name, query, lang, sort, order ,page }) => {
 const Search = ({ router, repos }) => {
   const { ...querys } = router.query;
   const { lang, sort, order ,page} = router.query;
+
+  useEffect(()=>{
+      if(!isServer){
+        cacheArray(repos.items)
+      }
+   
+  })
+
   return (
     <div className="root">
       <Row gutter={20}>
