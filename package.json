@@ -6,7 +6,7 @@
     "dev": "node server.js",
     "build": "next build",
     "start": "next start",
-    "analyze:browser":"cross-env BUNDLE_ANALYZE=browser next build"
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
@@ -24,6 +24,7 @@
     "koa-body": "^4.2.0",
     "koa-router": "^10.0.0",
     "koa-session": "^6.2.0",
+    "lodash": "^4.17.21",
     "lru-cache": "^6.0.0",
     "markdown-it": "^12.0.6",
     "moment": "^2.29.1",
